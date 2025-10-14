@@ -60,7 +60,7 @@ module holder(width, height, depth, wall_thickness, internal_width) {
 }
 
 // Example Usage
-width_ex = 76;
+width_ex = 90;
 height_ex = 76;
 depth_ex = 150;
 wall_thickness_ex = 4;
