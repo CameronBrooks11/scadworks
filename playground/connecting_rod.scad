@@ -7,12 +7,12 @@ z_fight = $preview ? 0.05 : 0;
 rod_diameter = 8;
 
 // Number 8 nut
-nut_flat_to_flat = 12.8;
-nut_height = 6.5;
+nut_flat_to_flat = 13;
+nut_height = 6.6;
 
 // Connector options
-wall_thickness = 3;
-allowance = 0.3;
+wall_thickness = 2.8;
+allowance = 1.0;
 num_nuts = 4; // haha get it num nuts
 
 module connecting_rod() {
