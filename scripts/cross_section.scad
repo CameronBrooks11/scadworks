@@ -6,7 +6,7 @@
  * @param {string} color - Color of the cross section.
  */
 
-module xSection(showXSection = false, size = 100, color = "Red") {
+module cross_section(showXSection = false, size = 100, color = "Red") {
   if (showXSection) {
     difference() {
       children();
@@ -20,4 +20,4 @@ module xSection(showXSection = false, size = 100, color = "Red") {
 
 use <rounded_box.scad>;
 
-xSection(true) rounded_box([30, 20, 10], radius=3);
+cross_section(true) rounded_box([30, 20, 10], radius=3);
