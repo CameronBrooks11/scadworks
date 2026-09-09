@@ -10,6 +10,7 @@ lidheight = 45; //inner height of the lid
 cylthick = 1; //thickness of plastic surrounding cylinders
 cyltol = 0.01; //tolerance of lid fit
 outerchamf = .2; //outer chamfer depth
+chamflayer = 0.1; //vertical step size of the chamfer approximation
 
 //NECESSARY MODULES
 
@@ -34,16 +35,23 @@ module outline(diam) {
     circles(diam);
 }
 
-//generates chamfers (note: I got this code from a friend and it only chamfers the top of a part, so I have to flip parts to chamfer the bottom)
-module chamfer(h, chamfer) {
-  if (chamfer > 0)
-    intersection() {
-      linear_extrude(h) children();
-      union() {
-        if (h - chamfer > 0) linear_extrude(h - chamfer) children();
-        translate([0, 0, h - chamfer]) roof() children();
-      }
-    }
+// Chamfers the top of an extruded 2D profile, flip the part to chamfer a bottom.
+// The original used roof(), which is an EXPERIMENTAL builtin: absent on release
+// builds and off by default on dev snapshots. When it is missing OpenSCAD only
+// warns and carries on, so the original silently lost its taper and every
+// extrusion came out short. Stacked inward offsets need no feature flag.
+module chamfer(h, chamfer, layer=chamflayer) {
+  if (chamfer > 0) {
+    steps = max(4, ceil(chamfer / layer));
+    step = chamfer / steps;
+    linear_extrude(h - chamfer) children();
+    translate([0, 0, h - chamfer])
+      for (i = [0:1:steps - 1])
+        translate([0, 0, i * step])
+          linear_extrude(step + 0.001)
+            offset(delta=-(i + 0.5) * step)
+              children();
+  }
   else {
     linear_extrude(h) children();
   }
