@@ -80,11 +80,21 @@ Delivered as `cigarette_holder_v2.scad`, one commit per item:
    asserts guarding splits that cannot be built.
 4. `f52d357` - **annotates the parameters for the Customizer**: `/* [Group] */` tabs,
    `[min:step:max]` sliders, `/* [Hidden] */` for internals.
-5. **Slimmed back to 96 lines**, under the 106 of the original. A `part` dropdown and
-   an assembled `fitcheck` view were cut as more than the post asked for; `basefloor`
-   and `topwall` collapsed into `cylthick`, since a uniform wall wants one number.
-   Verified geometrically identical to the pre-slim version: same triangle count,
-   same volume, largest vertex delta 7.1e-15 mm from float reassociation.
+5. **Slimmed to 99 lines**, under the 106 of the original, by removing duplication
+   rather than by packing statements onto shared lines:
+   - `chamfer()` gained a `flip` argument, retiring the `translate + mirror + chamfer`
+     idiom at all four call sites - the very thing OP's own comment complains about
+     ("*I have to flip parts to chamfer the bottom*"). Three of the four also lose
+     their outer `translate`, because `flip` already positions the part.
+   - `radius()` was a one-use abstraction; inlined into `outline()`.
+   - The unexplained `translate([0, 0, 3])` is gone. That section is enclosed by the
+     wider base below z=45, so starting it at 0 is the same solid.
+   - `basefloor` and `topwall` collapsed into `cylthick` - a uniform wall wants one
+     number, not three names for 1mm.
+   - The `part` dropdown and `fitcheck` view were cut as more than the post asked for.
+
+   Geometry is unchanged throughout: same triangle count, same volume, same bounding
+   box as the 160-line version.
 
 The geometry is untouched beyond the chamfer implementation. The `offset` fillet trick
 is OP's (and u/oldesole1's) and it works - this was about parameter surface and
@@ -100,7 +110,7 @@ portability, not a rewrite.
 | Both asserts | fail on the input each names, exit 1 |
 | Customizer `-p/-P` parameter set | applies; 4->6 cylinders widens X 44.50 -> 65.50 |
 | Chamfer vs `roof()` reference | base width 12.650 vs 12.600 (full 13.000) |
-| Line count | 96, against 106 for v1 |
+| Line count | 99, against 106 for v1; longest code line 88 chars |
 
 Known cosmetic artifact: the slice overlap epsilon puts the Z extent at
 -0.001..65.001 instead of 0..65. One micron, well under print resolution.
