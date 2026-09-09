@@ -1,5 +1,6 @@
-// Parametric cigarette case - Customizer-ready revision of u/FwippyBall's design,
-// extruded-shape math by u/oldesole1. Runs on stock OpenSCAD, no experimental features.
+// Parametric cigarette case
+// Customizer-ready revision of u/FwippyBall's design,
+// extruded-shape math by u/oldesole1. 
 
 /* [Capacity] */
 // how many cigarettes the case holds
