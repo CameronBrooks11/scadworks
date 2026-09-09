@@ -78,9 +78,13 @@ Delivered as `cigarette_holder_v2.scad`, one commit per item:
 3. `054edba` - **derives `lidheight` from `ciglength`** and exposes the floor and
    ceiling that were bare `1`s. `holderheight` alone now slides the split, with two
    asserts guarding splits that cannot be built.
-4. `f52d357` - **annotates the parameters for the Customizer** and adds a `part`
-   dropdown, which also retires the commented-out `cylinder(84, d=9);` dummy at the
-   foot of the file in favour of a `fitcheck` view.
+4. `f52d357` - **annotates the parameters for the Customizer**: `/* [Group] */` tabs,
+   `[min:step:max]` sliders, `/* [Hidden] */` for internals.
+5. **Slimmed back to 96 lines**, under the 106 of the original. A `part` dropdown and
+   an assembled `fitcheck` view were cut as more than the post asked for; `basefloor`
+   and `topwall` collapsed into `cylthick`, since a uniform wall wants one number.
+   Verified geometrically identical to the pre-slim version: same triangle count,
+   same volume, largest vertex delta 7.1e-15 mm from float reassociation.
 
 The geometry is untouched beyond the chamfer implementation. The `offset` fillet trick
 is OP's (and u/oldesole1's) and it works - this was about parameter surface and
@@ -92,18 +96,18 @@ portability, not a rewrite.
 | --- | --- |
 | v2 on stock 2021.01, no flags | exit 0, **zero warnings** (v1 warns 6x) |
 | v2 on 2026.09.05 nightly, no flags | exit 0, zero warnings |
-| `part` = both / holder / lid / fitcheck | all render clean |
 | Closed height across `holderheight` 60..80 | constant **87.50mm**, measured from renders |
 | Both asserts | fail on the input each names, exit 1 |
 | Customizer `-p/-P` parameter set | applies; 4->6 cylinders widens X 44.50 -> 65.50 |
 | Chamfer vs `roof()` reference | base width 12.650 vs 12.600 (full 13.000) |
+| Line count | 96, against 106 for v1 |
 
 Known cosmetic artifact: the slice overlap epsilon puts the Z extent at
 -0.001..65.001 instead of 0..65. One micron, well under print resolution.
 
-Not verified here: the Customizer's actual *panel rendering* - groups, sliders,
-dropdown - needs the GUI. The annotation syntax follows the documented form and the
-parameters are confirmed reachable via `-p/-P`.
+Not verified here: the Customizer's actual *panel rendering* - groups and sliders -
+needs the GUI. The annotation syntax follows the documented form and the parameters
+are confirmed reachable via `-p/-P`.
 
 ## Reply outline
 
