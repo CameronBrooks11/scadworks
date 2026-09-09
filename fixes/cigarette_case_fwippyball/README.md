@@ -1,129 +1,46 @@
 # Parametric Cigarette Case - FwippyBall on Reddit
 
-Response to [Parametric cigarette case (for helping to limit cigarette usage)](https://www.reddit.com/r/openscad/comments/1wavv9n/parametric_cigarette_case_for_helping_to_limit/)
-by u/FwippyBall in r/openscad.
+[Parametric cigarette case (for helping to limit cigarette usage)](https://www.reddit.com/r/openscad/comments/1wavv9n/parametric_cigarette_case_for_helping_to_limit/)
+by u/FwippyBall in r/openscad. Thread read 2026-09-09.
 
-Thread captured 2026-09-09 11:36 EST, post ~22h old at that time.
+`cigarette_holder_v1.scad` is OP's file, reformatted only (`d389ff0`) - the frozen
+before. `cigarette_holder_v2.scad` is the answer.
 
-## Context
+## The ask
 
-OP wanted a printable case that both protects cigarettes in a bag and caps how many
-get carried, and used it as their first OpenSCAD project. The design is a holder body
-plus a slip-over lid, both derived from the same 2D outline: N overlapping circles
-unioned, then filleted with an `offset(r)` / `offset(delta=-r)` pair, then extruded
-with a chamfer at the top. Credit for the extruded-shape math goes to u/oldesole1,
-per OP.
+> I still need to learn the syntax for setting up the Customizer
 
-`cigarette_holder_v1.scad` is OP's file as posted, reformatted in place (commit
-`d389ff0`) with no semantic change - it renders byte-identical STL to the original.
-Treat it as the frozen "before" reference; the fix lives in
-`cigarette_holder_v2.scad`.
+u/Internal_Teach1339 already covered globals, the Window menu, and `//comment` as a
+label, so a reply that stops there adds nothing. The gap is `/* [Group] */` tabs,
+`[min:step:max]` sliders, and `/* [Hidden] */`.
 
-Parameters as posted: 4 cylinders, 12 mm dia, 10.5 mm centre spacing, 3 mm fillet,
-65 mm holder inner height, 45 mm lid inner height, 20 mm lid overlap, 1 mm wall,
-0.01 mm fit tolerance, 0.2 mm outer chamfer.
+OP also volunteered their own next-print note - shorter lid, taller case - which is a
+parametrics problem: `holderheight`, `lidheight` and `lidoverlap` are three free
+variables when the cigarette actually fixes the closed height.
 
-## What OP actually asked for
+## Found by running it
 
-> I still need to learn the syntax for setting up the Customizer, but if you play
-> around with the variables you can probably figure out what they do.
+- **`roof()` is experimental.** Absent on release builds, off by default on dev
+  snapshots. OpenSCAD only warns and still exits 0, so `chamfer()` loses its taper and
+  every extrusion renders short - Z `0.200..64.700` instead of `0.000..65.000` - and
+  the bottom relief cut, where `h - chamfer` is 0, intersects an empty union and
+  vanishes. Anyone but OP prints a quietly undersized part. Six warnings on 2021.01,
+  five of them identical, easy to scroll past.
+- `engraving(false)` is called but never defined - the posted file is not self-contained.
+- A stray `;` in `lid()`. Cosmetic.
 
-So the ask is **Customizer annotation syntax**, not the geometry.
+## v2
 
-OP also volunteered a design gripe worth answering, since it is a parametrics problem
-rather than a print problem:
+Customizer-annotated; `lidheight` derived from `ciglength` so `holderheight` alone
+slides the split (closed height stays 87.50mm across 60..80); `roof()` replaced with
+stacked `offset()` slices needing no feature flag; two asserts for unbuildable splits.
+99 lines against v1's 106.
 
-> if I ever print a new one I should make the height of the lid shorter and the case
-> (minus the overlap space) taller
+Renders warning-free on stock 2021.01 and on a 2026.09 nightly, both with no flags.
+Not checked: the Customizer's actual panel rendering, which needs the GUI.
 
-In v1 `holderheight`, `lidheight` and `lidoverlap` are three independent free
-variables, so nothing enforces that the lid covers the overlap or that the exposed
-holder is the length OP wants. That relationship should be derived, not hand-tuned.
+## Reply
 
-## Thread state - what is already answered
-
-u/Internal_Teach1339 replied with the basics and OP has seen it: declare variables
-globally (outside modules), open **Window -> Customizer**, and `//comment` immediately
-above a variable becomes its label. They confirmed resizing and cylinder count work.
-
-**A reply that only repeats that adds nothing.** The gap left open is everything past
-the bare label: parameter groups/tabs, value constraints, and the fact that the file
-has real problems that will bite OP the moment someone else opens it.
-
-## Findings from running the file
-
-Verified locally, not inferred:
-
-| Finding | Evidence |
-| --- | --- |
-| `roof()` is an **experimental** builtin, off by default | 2026.09.05 nightly: `WARNING: Experimental builtin module 'roof' is not enabled ... line 44`. Needs `--enable=roof` on the CLI, or Preferences -> Features -> `roof` in the GUI. |
-| On a release build `roof()` does not exist at all | 2021.01: `WARNING: Ignoring unknown module 'roof' ... line 44` (x5). Render still exits 0. It is worse than losing the chamfers: `chamfer()` intersects with a `union()` whose only other branch is `linear_extrude(h - chamfer)`, so every extrusion comes out short (Z `0.200..64.700` instead of `0.000..65.000`), and the bottom relief cut - where `h - chamfer` is 0 - intersects with an empty union and disappears entirely. |
-| `engraving(false)` is called but never defined | Both versions: `WARNING: Ignoring unknown module 'engraving' in file cigarette_holder_v1.scad, line 104`. Leftover from OP's local copy; the posted file is not self-contained. |
-| Stray empty statement | `;;` after `outline(...)` in `lid()`, now a lone `;` at line 88 post-format - harmless, cosmetic. |
-| Six warnings in total on a release build | 2021.01: 5x `roof`, 1x `engraving`. Geometry is otherwise `Simple: yes`, 2450 facets. |
-
-The `roof()` point matters most: it is the difference between "works great" for OP and
-a quietly undersized part for anyone else who prints the file, and the warning scrolls
-past among five identical copies of itself.
-
-## The fix
-
-Delivered as `cigarette_holder_v2.scad`, one commit per item:
-
-1. `e3eb74f` - **drops the undefined `engraving()` call** and the stray `;`. Verified
-   byte-identical STL to v1, so the rest of the work starts from a clean base.
-2. `76ef920` - **replaces `roof()` with stacked inward `offset()` slices.** No feature
-   flag, no version floor. A four-step minimum keeps small chamfers honest: at the
-   0.2mm outer chamfer the profile lands 0.05mm off the `roof()` reference.
-3. `054edba` - **derives `lidheight` from `ciglength`** and exposes the floor and
-   ceiling that were bare `1`s. `holderheight` alone now slides the split, with two
-   asserts guarding splits that cannot be built.
-4. `f52d357` - **annotates the parameters for the Customizer**: `/* [Group] */` tabs,
-   `[min:step:max]` sliders, `/* [Hidden] */` for internals.
-5. **Slimmed to 99 lines**, under the 106 of the original, by removing duplication
-   rather than by packing statements onto shared lines:
-   - `chamfer()` gained a `flip` argument, retiring the `translate + mirror + chamfer`
-     idiom at all four call sites - the very thing OP's own comment complains about
-     ("*I have to flip parts to chamfer the bottom*"). Three of the four also lose
-     their outer `translate`, because `flip` already positions the part.
-   - `radius()` was a one-use abstraction; inlined into `outline()`.
-   - The unexplained `translate([0, 0, 3])` is gone. That section is enclosed by the
-     wider base below z=45, so starting it at 0 is the same solid.
-   - `basefloor` and `topwall` collapsed into `cylthick` - a uniform wall wants one
-     number, not three names for 1mm.
-   - The `part` dropdown and `fitcheck` view were cut as more than the post asked for.
-
-   Geometry is unchanged throughout: same triangle count, same volume, same bounding
-   box as the 160-line version.
-
-The geometry is untouched beyond the chamfer implementation. The `offset` fillet trick
-is OP's (and u/oldesole1's) and it works - this was about parameter surface and
-portability, not a rewrite.
-
-## Verification
-
-| Check | Result |
-| --- | --- |
-| v2 on stock 2021.01, no flags | exit 0, **zero warnings** (v1 warns 6x) |
-| v2 on 2026.09.05 nightly, no flags | exit 0, zero warnings |
-| Closed height across `holderheight` 60..80 | constant **87.50mm**, measured from renders |
-| Both asserts | fail on the input each names, exit 1 |
-| Customizer `-p/-P` parameter set | applies; 4->6 cylinders widens X 44.50 -> 65.50 |
-| Chamfer vs `roof()` reference | base width 12.650 vs 12.600 (full 13.000) |
-| Line count | 99, against 106 for v1; longest code line 88 chars |
-
-Known cosmetic artifact: the slice overlap epsilon puts the Z extent at
--0.001..65.001 instead of 0..65. One micron, well under print resolution.
-
-Not verified here: the Customizer's actual *panel rendering* - groups and sliders -
-needs the GUI. The annotation syntax follows the documented form and the parameters
-are confirmed reachable via `-p/-P`.
-
-## Reply outline
-
-Lead with the Customizer syntax OP asked for, in one pasteable block. Then the
-version/flag warning as a short "heads up, on a release build this renders 0.2mm
-short and loses the bottom relief".
-Then the derived-heights suggestion as the answer to OP's own next-print note. Keep
-the undefined `engraving()` to a one-line aside - it is a copy-paste slip, not worth
-dwelling on.
+Lead with the Customizer syntax, one pasteable block. Then `roof()` as a short heads
+up - on a release build this renders 0.2mm short and loses the bottom relief. Then
+derived heights as the answer to OP's own note. `engraving()` as a one-line aside.
