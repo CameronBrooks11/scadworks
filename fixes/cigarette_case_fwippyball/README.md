@@ -1,8 +1,7 @@
 # Parametric Cigarette Case - FwippyBall on Reddit
 
-Response to a post in [r/openscad](https://www.reddit.com/r/openscad/): *"Parametric
-cigarette case (for helping to limit cigarette usage)"* by u/FwippyBall.
-<!-- TODO: exact post permalink was not captured with the thread; fill before replying. -->
+Response to [Parametric cigarette case (for helping to limit cigarette usage)](https://www.reddit.com/r/openscad/comments/1wavv9n/parametric_cigarette_case_for_helping_to_limit/)
+by u/FwippyBall in r/openscad.
 
 Thread captured 2026-09-09 11:36 EST, post ~22h old at that time.
 
