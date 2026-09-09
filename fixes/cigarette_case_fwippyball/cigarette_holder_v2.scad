@@ -4,13 +4,25 @@ cylnumber = 4; //how many cylinders
 cyldiam = 12; //diameter of the cylinders
 cyloffset = 10.5; //distance between cylinder centers
 fildiam = 3; //diameter of fillet circles
-holderheight = 65; //inner height of the holder
+holderheight = 65; //inner height of the holder - raise for a taller case and shorter lid
 lidoverlap = 20; //overlap of the lid and holder
-lidheight = 45; //inner height of the lid
+ciglength = 84; //length of one cigarette
+cigclearance = 1.5; //headroom above the cigarettes when the lid is shut
 cylthick = 1; //thickness of plastic surrounding cylinders
+basefloor = 1; //floor under the cigarettes
+topwall = 1; //ceiling above the cigarettes, inside the lid
 cyltol = 0.01; //tolerance of lid fit
 outerchamf = .2; //outer chamfer depth
 chamflayer = 0.1; //vertical step size of the chamfer approximation
+
+//DERIVED
+//The cigarette sets the closed height of the case, so lidheight is not a free
+//choice - holderheight alone decides how that height splits between the parts.
+innerlength = basefloor + ciglength + cigclearance;
+lidheight = innerlength + topwall - (holderheight - lidoverlap);
+
+assert(holderheight > lidoverlap + 3, "holderheight must exceed lidoverlap - no reduced section left for the lid to grip");
+assert(lidheight > lidoverlap + topwall, "lid too short to cover the overlap - lower holderheight or raise lidoverlap");
 
 //NECESSARY MODULES
 
@@ -75,7 +87,7 @@ module holder() {
             chamfer(holderheight - lidoverlap, outerchamf)
               outline(cyldiam + cylthick);
       }
-      translate([0, 0, 1 + holderheight])
+      translate([0, 0, basefloor + holderheight])
         mirror([0, 0, 1])
           chamfer(holderheight, 1)
             circles(cyldiam - 2);
@@ -93,9 +105,9 @@ module lid() {
       mirror([0, 0, 1])
         chamfer(lidheight, outerchamf)
           outline(cyldiam + cylthick);
-    translate([0, 0, 1 + holderheight])
+    translate([0, 0, lidheight - topwall])
       mirror([0, 0, 1])
-        chamfer(holderheight, 1)
+        chamfer(lidheight - topwall, 1)
           offset(-cylthick + cyltol) {
             outline(cyldiam + cylthick);
           }
