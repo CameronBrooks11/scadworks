@@ -34,8 +34,6 @@ module cord_protector(allow = 0.4, trap_length_factor = 0.95) {
 
     trap_length = (length * trap_length_factor);
 
-    pinched_end_length = length - trap_length;
-
     module j_conn_local(w, l, h, allowance = 0) {
         // Connector end
         for (i = [0, 1])
@@ -45,7 +43,6 @@ module cord_protector(allow = 0.4, trap_length_factor = 0.95) {
                         j_connector(w, l, h, allowance);
     }
 
-    //rotate([90, 0, 0])
     union() {
         difference() {
             // Main trapezium body
@@ -82,26 +79,3 @@ module j_connector(width, length, height, allowance = 0) {
 }
 
 cord_protector();
-
-// jconn_width = cord_cross_section_bounding_width;
-// jconn_length = length * 0.05;
-// jconn_height = cord_cross_section_bounding_height;
-
-// j_connector(jconn_width, jconn_length, jconn_height);
-
-/*
-
-    // Pinched end
-    if (pinch_end) {
-      difference() {
-        color("blue")
-          translate([0, 0, trap_length])
-            linear_extrude(height=pinched_end_length, scale=1 - trap_length_factor)
-              polygon(cut_trap_pts);
-
-        // hollow out tips
-        translate([0, cord_cross_section_bounding_height / 2 - z_fight / 2, trap_length + pinched_end_length])
-          cube([cord_cross_section_bounding_width, cord_cross_section_bounding_height + z_fight, pinched_end_length * 2], center=true);
-      }
-    }
-*/
