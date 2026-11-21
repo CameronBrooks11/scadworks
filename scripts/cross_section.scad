@@ -7,15 +7,15 @@
  */
 
 module cross_section(showXSection = false, size = 100, color = "Red") {
-  if (showXSection) {
-    difference() {
-      children();
+    if (showXSection) {
+        difference() {
+            children();
 
-      translate([-size / 2, -size, -size / 2]) color(color) cube([size, size, size]);
+            translate([-size / 2, -size, -size / 2]) color(color) cube([size, size, size]);
+        }
+    } else {
+        children();
     }
-  } else {
-    children();
-  }
 }
 
 use <rounded_box.scad>;
