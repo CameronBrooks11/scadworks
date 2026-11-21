@@ -1,6 +1,10 @@
 default:
     @just --list
 
+# Render every .scad file and check the ones that state a result
+test:
+    python3 tests/test_scadworks.py
+
 # Everything CI runs, bar the tests
 check: fmt-check
 
