@@ -1,3 +1,4 @@
+// A parametric box with a lid.
 /*
  * @file parametric_box_example.scad
  * @brief Example of a parametric box with a lid

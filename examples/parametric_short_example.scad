@@ -1,3 +1,4 @@
+// A short parametric model.
 /*
  * @file parametric_short_example.scad
  * @brief Short example of a parametric model
