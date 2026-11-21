@@ -100,33 +100,33 @@ function calc_shaft_spacing(shafts, row_width, shaft_diameter, radius) = (row_wi
 
 // Function to create the Dremel drill bit holder
 module dremel_holder(bit_rows) {
-  for (i = [0:bit_rows - 1]) {
-    translate([0, sum(depth_per_row, i), 0])
-      row_with_shafts(shafts_per_row[i], calc_radius(depth_per_row[i], shafts_per_row[i]), height_per_row[i], depth_per_row[i]);
-  }
+    for (i = [0:bit_rows - 1]) {
+        translate([0, sum(depth_per_row, i), 0])
+            row_with_shafts(shafts_per_row[i], calc_radius(depth_per_row[i], shafts_per_row[i]), height_per_row[i], depth_per_row[i]);
+    }
 }
 
 // Function to create a single row with drill bit holders and lips
 module row_with_shafts(shafts, radius, height, row_depth) {
-  shaft_spacing = calc_shaft_spacing(shafts, row_width, shaft_diameter, radius);
+    shaft_spacing = calc_shaft_spacing(shafts, row_width, shaft_diameter, radius);
 
-  difference() {
-    // Row
-    cube([row_width, row_depth, height]);
-    // Drill bit holders and indentations
-    for (j = [0:shafts - 1]) {
-      // Calculate the position of each shaft
-      shaft_position = (j + 1) * shaft_spacing + j * (shaft_diameter + 2 * radius) + (shaft_diameter + 2 * radius) / 2;
+    difference() {
+        // Row
+        cube([row_width, row_depth, height]);
+        // Drill bit holders and indentations
+        for (j = [0:shafts - 1]) {
+            // Calculate the position of each shaft
+            shaft_position = (j + 1) * shaft_spacing + j * (shaft_diameter + 2 * radius) + (shaft_diameter + 2 * radius) / 2;
 
-      // Box indentation
-      translate([shaft_position - (shaft_diameter + radius) / 2, row_depth / 2 - (shaft_diameter + radius) / 2, height - indentation_depth])
-        cube([shaft_diameter + radius, shaft_diameter + radius, indentation_depth + z_fight]);
-      // Drill bit holder
-      translate([shaft_position, row_depth / 2, height - shaft_depth])
-        cylinder(shaft_depth, shaft_diameter / 2, shaft_diameter / 2, $fn=100);
-      // Increase / Decrease $fn for smoother circles
+            // Box indentation
+            translate([shaft_position - (shaft_diameter + radius) / 2, row_depth / 2 - (shaft_diameter + radius) / 2, height - indentation_depth])
+                cube([shaft_diameter + radius, shaft_diameter + radius, indentation_depth + z_fight]);
+            // Drill bit holder
+            translate([shaft_position, row_depth / 2, height - shaft_depth])
+                cylinder(shaft_depth, shaft_diameter / 2, shaft_diameter / 2, $fn=100);
+            // Increase / Decrease $fn for smoother circles
+        }
     }
-  }
 }
 
 // Function to calculate the height of each row

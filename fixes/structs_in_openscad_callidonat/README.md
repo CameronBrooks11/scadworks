@@ -15,11 +15,6 @@ dog = ["Rex", true];
 echo(dog[DOG_NAME]);
 echo(dog[DOG_IS_GOOD]);
 
-DOG_NAME = 0;
-DOG_IS_GOOD = 1;
-dog = ["Rex", true];
-echo(dog[DOG_NAME]);
-echo(dog[DOG_IS_GOOD]);
 // should return:
 // ECHO: "Rex"
 // ECHO: true
@@ -31,33 +26,6 @@ You can further improve this using vectors + functions to construct the record a
 
 ```scad
 PERSON_NAME = 0;
-PERSON_AGE  = 1;
-
-function person(name, age = 42) = [name, age];
-
-function person_name(p) = p[PERSON_NAME];
-function person_age(p)  = p[PERSON_AGE];
-
-// "Update" by returning a new record, not mutating the old one.
-function person_with_age(p, age) =
-    [person_name(p), age];
-
-people = [
-    person("Bob", 20),
-    person("Alice", 30),
-    person("Fred", 0),
-    person("Ann", 40),
-    person("Jon")
-];
-
-for (p = people)
-    echo(str(person_name(p), " is ", person_age(p)));
-
-s = person("Sean", 50);
-echo(person_name(s));
-
-sp = person_with_age(s, 51);
-echo(person_age(sp));PERSON_NAME = 0;
 PERSON_AGE  = 1;
 
 function person(name, age = 42) = [name, age];
